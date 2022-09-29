@@ -99,10 +99,7 @@ class Scraper:
         print (top50_chart_list['titles'])
         return top50_chart_list
 
-    def get_top_50_tracks(self):
-        '''
-        gets the top 50 tracks for each chart
-        '''
+ 
         
         top50_chart_list = self.get_top_50_links()
         top_50_tracks = []
@@ -126,5 +123,6 @@ if __name__ == '__main__':
     #data = bot.get_data()
     #print(data)
     bot.accept_cookies()
+    bot.get_top_50_links()
  
    
