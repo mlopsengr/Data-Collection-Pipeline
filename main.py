@@ -1,3 +1,4 @@
+from email.mime import image
 import os
 import json
 from pickle import NONE
@@ -78,7 +79,7 @@ class Scraper:
         
         top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
         top50_chart_list = {'links': [] }
-        charts = {'category':[], 'artist': [], 'track':[],'streams':[]}
+        charts = {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]}
 
         for record in top50_list:
 
@@ -95,11 +96,6 @@ class Scraper:
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
             charts['category'].append(chart_name)
 
-        
-        top50_chart_list = self.get_top_50_links()
-        top_50_tracks = []
-        top_50_artists = []
-        top_50_image = []
 
         for link in top50_chart_list['links']:
             self.driver.get(link)
@@ -109,7 +105,7 @@ class Scraper:
             track = tracks.text
             charts['track'].append(track)
 
-        print (top50_chart_list['titles'])
+        print (top50_chart_list)
         return top50_chart_list
 
 
