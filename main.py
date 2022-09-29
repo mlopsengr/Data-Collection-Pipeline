@@ -3,7 +3,7 @@ import os
 import json
 from pickle import NONE
 from this import d
-from types import NoneType
+#from types import NoneType
 from unicodedata import name
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -79,7 +79,17 @@ class Scraper:
         
         top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
         top50_chart_list = {'links': [] }
-        charts = {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]}
+        charts = { 1: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                   2: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                   3: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                   4: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                     5: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        6: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        7: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        8: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        9: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        10: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+        }
 
         for record in top50_list:
 
@@ -91,21 +101,23 @@ class Scraper:
 
   
         for link in top50_chart_list['links']:
+            i = 1
             self.driver.get(link)
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
-            charts['category'].append(chart_name)
+            charts[i]['category'].append(chart_name)
+            i += 1
 
 
-        for link in top50_chart_list['links']:
-            self.driver.get(link)
-            time.sleep(1)
-            track_holder = self.driver.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
-            tracks = track_holder.find_element(By.XPATH, '//a[@class="trackItem__content sc-truncate"]')
-            track = tracks.text
-            charts['track'].append(track)
+     #   for link in top50_chart_list['links']:
+     #       self.driver.get(link)
+     #       time.sleep(1)
+     #       track_holder = self.driver.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
+     #       tracks = track_holder.find_element(By.XPATH, '//a[@class="trackItem__content sc-truncate"]')
+     #       track = tracks.text
+     #       charts['track'].append(track)
 
-        print (top50_chart_list)
+        print (charts)
         return top50_chart_list
 
 
