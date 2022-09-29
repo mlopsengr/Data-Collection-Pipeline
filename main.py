@@ -74,17 +74,17 @@ class Scraper:
         A list of the top 50 playlist categories on soundcloud
         '''
         
-        top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
-        top50_chart_list = []
+        self.top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
+        self.top50_chart_list = {'links': []}
 
-        for record in top50_list:
+        for record in self.top50_list:
 
             a_tag = record.find_element(by=By.TAG_NAME, value = 'a')
             link = a_tag.get_attribute('href')
-            top50_chart_list.append(link)
+            self.top50_chart_list['links'].append(link)
     
         print(f"There are {top50_chart_list.__len__()} chart lists")
-        return top50_chart_list
+        return self.top50_chart_list
 
     def get_charts_info(self):
         '''
