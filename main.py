@@ -99,9 +99,9 @@ class Scraper:
     
         print(f"There are {top50_chart_list['links'].__len__()} chart lists")
 
-  
+        i = 1
         for link in top50_chart_list['links']:
-            i = 1
+           
             self.driver.get(link)
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
