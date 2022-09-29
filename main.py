@@ -75,7 +75,7 @@ class Scraper:
         '''
         
         top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
-        top50_chart_list = {'links': []}
+        top50_chart_list = {'links': [], 'titles': []}
 
         for record in top50_list:
 
@@ -83,26 +83,21 @@ class Scraper:
             link = a_tag.get_attribute('href')
             top50_chart_list['links'].append(link)
     
-        print(f"There are {top50_chart_list.__len__()} chart lists")
-        return top50_chart_list
+        print(f"There are {top50_chart_list['links'].__len__()} chart lists")
 
-    def get_charts_info(self):
-        '''
-        Returns Chart Titles
-        '''
-
-        top50_chart_list = self.get_top_50_links()
-        chart_info = []
-
+  
         for link in top50_chart_list['links']:
             self.driver.get(link)
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
-            chart_info.append(chart_name)
+            top50_chart_list['titles'].append(chart_name)
+
+ 
+
            
           
-        print(chart_info)
-        return chart_info
+        print (top50_chart_list['titles'])
+        return top50_chart_list
 
     def get_top_50_tracks(self):
         '''
@@ -131,5 +126,5 @@ if __name__ == '__main__':
     #data = bot.get_data()
     #print(data)
     bot.accept_cookies()
-    bot.get_charts_info()
+ 
    
