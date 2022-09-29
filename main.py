@@ -1,6 +1,8 @@
 import os
 import json
+from pickle import NONE
 from this import d
+from types import NoneType
 from unicodedata import name
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -75,7 +77,8 @@ class Scraper:
         '''
         
         top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
-        top50_chart_list = {'links': [], 'titles': []}
+        top50_chart_list = {'links': [] }
+        charts = {'category':[], 'artist': [], 'track':[],'streams':[]}
 
         for record in top50_list:
 
@@ -90,30 +93,24 @@ class Scraper:
             self.driver.get(link)
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
-            top50_chart_list['titles'].append(chart_name)
+            charts['category'].append(chart_name)
 
- 
-
-           
-          
-        print (top50_chart_list['titles'])
-        return top50_chart_list
-
- 
         
         top50_chart_list = self.get_top_50_links()
         top_50_tracks = []
         top_50_artists = []
         top_50_image = []
 
-        for link in top50_chart_list:
+        for link in top50_chart_list['links']:
             self.driver.get(link)
             time.sleep(1)
             track_holder = self.driver.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
             tracks = track_holder.find_element(By.XPATH, '//a[@class="trackItem__content sc-truncate"]')
             track = tracks.text
-            top_50_tracks.append(track)
+            charts['track'].append(track)
 
+        print (top50_chart_list['titles'])
+        return top50_chart_list
 
 
 
