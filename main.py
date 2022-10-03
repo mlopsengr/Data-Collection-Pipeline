@@ -124,6 +124,8 @@ class Scraper:
             time.sleep(1)
             song_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
             song_hold = song_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
+            track = song_hold.find_element(By.XPATH, '//a[@class="trackItem__trackTitle sc-link-dark sc-link-primary sc-font-light"]').text
+            charts[i]['track'].append(track)
 
 
         i = 1
