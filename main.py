@@ -117,16 +117,17 @@ class Scraper:
              track_hold = track_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
              artiste =track_hold.find_element(by=By.TAG_NAME, value ='a').text   
              charts[i]['artist'].append(artiste)
-             i += 1
+             
 
-       # i = 1
-       # for link in top50_chart_list['links']:
-       #     self.driver.get(link)
-       #     time.sleep(1)
-       #     song_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-       #     song_hold = song_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
-       #     track = song_hold.find_element(By.XPATH, '//a[@class="trackItem__trackTitle sc-link-dark sc-link-primary sc-font-light"]').text
-       #     charts[i]['track'].append(track)
+        i = 1
+        for link in top50_chart_list['links']:
+            self.driver.get(link)
+            time.sleep(1)
+            song_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
+            song_case = song_case.find_element(By.XPATH, '//div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
+            song_hold = song_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
+            track = song_hold.find_element(By.XPATH, '//a[@class="trackItem__trackTitle sc-link-dark sc-link-primary sc-font-light"]').text
+            charts[i]['track'].append(track)
 
 
         i = 1
@@ -137,7 +138,7 @@ class Scraper:
             stream_hold = stream_case.find_element(By.XPATH, '//div[@class="trackItem__additional"]')
             stream = stream_hold.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
             charts[i]['streams'].append(stream)
-            i += 1
+            
 
         print (charts)
         return top50_chart_list
