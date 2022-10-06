@@ -14,8 +14,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 
-#chrome_options = Options()
-#chrome_options.add_argument('--headless')
+chrome_options = Options()
+chrome_options.add_argument('--headless')
 #driver = webdriver.Chrome('/Users/tobijohn/miniforge3/envs/soundscrape-env/bin/chromedriver', chrome_options=chrome_options)
 
 
@@ -96,6 +96,7 @@ class Scraper:
             a_tag = record.find_element(by=By.TAG_NAME, value = 'a')
             link = a_tag.get_attribute('href')
             top50_chart_list['links'].append(link)
+            
     
         print(f"There are {top50_chart_list['links'].__len__()} chart lists")
 
@@ -112,31 +113,47 @@ class Scraper:
         for link in top50_chart_list['links']:
              self.driver.get(link)
              time.sleep(1)
-             track_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-             track_case = track_case.find_element(By.XPATH, '//div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
-             track_hold = track_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
-             artiste =track_hold.find_element(by=By.TAG_NAME, value ='a').text   
-             charts[i]['artist'].append(artiste)
+             #track_case = self.driver.find_''lement(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
+             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
+             #artiste_list = artiste_case.find_elements(by=By.XPATH, value='./li')
+             for artiste in artiste_list:
+                    artiste_case = artiste.find_element(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
+                    #track_hold = artiste_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
+                    artiste = artiste_case.find_elements(by=By.TAG_NAME, value ='a') 
+                    
+                    # make magic cell
+                    # %%
+                    print(len(artiste))
+                    
+                    charts[i]['artist'].append(artiste[1].text)
+                    charts[i]['track'].append(artiste[2].text)
+
+
+                    
+                    
+            
+           
+
              
 
         i = 1
-        for link in top50_chart_list['links']:
-            self.driver.get(link)
-            time.sleep(1)
-            song_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-            song_case = song_case.find_element(By.XPATH, '//div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
-            song_hold = song_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
-            track = song_hold.find_element(By.XPATH, '//a[@class="trackItem__trackTitle sc-link-dark sc-link-primary sc-font-light"]').text
-            charts[i]['track'].append(track)
+       # for link in top50_chart_list['links']:
+       #     self.driver.get(link)
+       #     time.sleep(1)
+       #     song_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
+       #     #song_case = song_case.find_element(By.XPATH, '//div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
+       #     song_hold = song_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
+       #     track = song_hold.find_element(By.XPATH, '//a[@class="trackItem__trackTitle sc-link-dark sc-link-primary sc-font-light"]').text
+       #     charts[i]['track'].append(track)
 
 
         i = 1
         for link in top50_chart_list['links']:
             self.driver.get(link)
-            time.sleep(1)
+            time.sleep(2)
             stream_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
             stream_hold = stream_case.find_element(By.XPATH, '//div[@class="trackItem__additional"]')
-            stream = stream_hold.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
+            stream = stream_case.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
             charts[i]['streams'].append(stream)
             
 
@@ -154,3 +171,4 @@ if __name__ == '__main__':
     bot.get_top_50_links()
  
    
+# %%
