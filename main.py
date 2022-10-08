@@ -136,7 +136,7 @@ class Scraper:
 
              
 
-        i = 1
+        #i = 1
        # for link in top50_chart_list['links']:
        #     self.driver.get(link)
        #     time.sleep(1)
