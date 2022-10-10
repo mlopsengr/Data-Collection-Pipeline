@@ -121,7 +121,7 @@ class Scraper:
                     #track_hold = artiste_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
                     artiste = artiste_case.find_elements(by=By.TAG_NAME, value ='a') 
                     
-                    # make magic cell
+                  
                     # %%
                     print(len(artiste))
                     
@@ -165,10 +165,11 @@ class Scraper:
 
 if __name__ == '__main__':
     bot = Scraper()
-    #data = bot.get_data()
+    data = bot.get_data()
+    
     #print(data)
-    bot.accept_cookies()
-    bot.get_top_50_links()
+    #bot.accept_cookies()
+    #bot.get_top_50_links()
  
    
 # %%
