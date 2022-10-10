@@ -116,15 +116,14 @@ class Scraper:
             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
             for artiste in artiste_list:
                    time.sleep(1)
-                   artiste_case = artiste.find_element(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
-                   artiste = artiste_case.find_elements(by=By.TAG_NAME, value ='a') 
-                   
-                 
-                   # %%
-                   #print(len(artiste))
-                   while range(50):
+                   artiste_case = artiste.find_elements(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
+                   for case in artiste_case:
+                        
+                        artiste = case.find_elements(by=By.TAG_NAME, value ='a') 
+                        
                         charts[i]['artist'].append(artiste[1].text)
                         charts[i]['track'].append(artiste[2].text)
+
                         
                    
                     
