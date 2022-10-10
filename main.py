@@ -128,6 +128,7 @@ class Scraper:
                     
                     charts[i]['artist'].append(artiste[1].text)
                     charts[i]['track'].append(artiste[2].text)
+                    i += 1
 
 
                     
@@ -171,6 +172,7 @@ if __name__ == '__main__':
     #print(data)
     bot.accept_cookies()
     bot.get_top_50_links()
- 
+    # %%
+    
    
 # %%
