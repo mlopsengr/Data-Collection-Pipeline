@@ -114,14 +114,14 @@ class Scraper:
        #      self.driver.get(link)
             time.sleep(1)
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(1)
+            time.sleep(0.5)
             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
             for artiste in artiste_list:
                    time.sleep(1)
-                   
+                   self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                    artiste_case = artiste.find_elements(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
                    for case in artiste_case:
-                        
+                        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                         artiste = case.find_elements(by=By.TAG_NAME, value ='a') 
                         
                         charts[i]['artist'].append(artiste[1].text)
