@@ -5,6 +5,7 @@ from pickle import NONE
 from this import d
 #from types import NoneType
 from unicodedata import name
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -107,21 +108,20 @@ class Scraper:
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
             charts[i]['category'].append(chart_name)
-           
+            i += 1
 
-       # i = 1
-       # for link in top50_chart_list['links']:
-       #      self.driver.get(link)
+        i = 1
+        for link in top50_chart_list['links']:
+            self.driver.get(link)
             time.sleep(1)
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            self.driver.execute_script("window.scrollTo(0, 1080)")
             time.sleep(0.5)
             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
             for artiste in artiste_list:
                    time.sleep(1)
-                   self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                   self.driver.execute_script("window.scrollTo(0, 1080)")
                    artiste_case = artiste.find_elements(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
                    for case in artiste_case:
-                        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                         artiste = case.find_elements(by=By.TAG_NAME, value ='a') 
                         
                         charts[i]['artist'].append(artiste[1].text)
@@ -133,22 +133,6 @@ class Scraper:
             i += 1
 
 
-                    
-                    
-            
-           
-
-             
-
-        #i = 1
-       # for link in top50_chart_list['links']:
-       #     self.driver.get(link)
-       #     time.sleep(1)
-       #     song_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-       #     #song_case = song_case.find_element(By.XPATH, '//div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
-       #     song_hold = song_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
-       #     track = song_hold.find_element(By.XPATH, '//a[@class="trackItem__trackTitle sc-link-dark sc-link-primary sc-font-light"]').text
-       #     charts[i]['track'].append(track)
 
 
         i = 1
@@ -160,9 +144,16 @@ class Scraper:
             stream = stream_case.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
             charts[i]['streams'].append(stream)
             
+        # convert chart to table
+        table =  pd.DataFrame(charts)
 
+        report = table.to_json
+
+        
+
+        print(table)
         print (charts)
-        return top50_chart_list
+        return top50_chart_list, table
 
 
 
@@ -174,6 +165,7 @@ if __name__ == '__main__':
     #print(data)
     bot.accept_cookies()
     bot.get_top_50_links()
+    
     # %%
     
    
