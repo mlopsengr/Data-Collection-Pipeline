@@ -107,28 +107,26 @@ class Scraper:
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
             charts[i]['category'].append(chart_name)
-            i += 1
+           
 
-        i = 1
-        for link in top50_chart_list['links']:
-             self.driver.get(link)
-             time.sleep(1)
-             #track_case = self.driver.find_''lement(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
-             #artiste_list = artiste_case.find_elements(by=By.XPATH, value='./li')
-             for artiste in artiste_list:
-                    time.sleep(1)
-                    artiste_case = artiste.find_element(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
-                    #track_hold = artiste_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
-                    artiste = artiste_case.find_elements(by=By.TAG_NAME, value ='a') 
+       # i = 1
+       # for link in top50_chart_list['links']:
+       #      self.driver.get(link)
+            time.sleep(1)
+            artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
+            for artiste in artiste_list:
+                   time.sleep(1)
+                   artiste_case = artiste.find_element(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
+                   artiste = artiste_case.find_elements(by=By.TAG_NAME, value ='a') 
+                   
+                 
+                   # %%
+                   #print(len(artiste))
+                   
+                   charts[i]['artist'].append(artiste[1].text)
+                   charts[i]['track'].append(artiste[2].text)
                     
-                  
-                    # %%
-                    print(len(artiste))
-                    
-                    charts[i]['artist'].append(artiste[1].text)
-                    charts[i]['track'].append(artiste[2].text)
-                    i += 1
+            i += 1
 
 
                     
