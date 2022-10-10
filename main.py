@@ -117,6 +117,7 @@ class Scraper:
              artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
              #artiste_list = artiste_case.find_elements(by=By.XPATH, value='./li')
              for artiste in artiste_list:
+                    time.sleep(1)
                     artiste_case = artiste.find_element(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
                     #track_hold = artiste_case.find_element(By.XPATH, '//div[@class="trackItem__content sc-truncate"]')
                     artiste = artiste_case.find_elements(by=By.TAG_NAME, value ='a') 
@@ -168,8 +169,8 @@ if __name__ == '__main__':
     data = bot.get_data()
     
     #print(data)
-    #bot.accept_cookies()
-    #bot.get_top_50_links()
+    bot.accept_cookies()
+    bot.get_top_50_links()
  
    
 # %%
