@@ -122,9 +122,11 @@ class Scraper:
                  
                    # %%
                    #print(len(artiste))
+                   while range(50):
+                        charts[i]['artist'].append(artiste[1].text)
+                        charts[i]['track'].append(artiste[2].text)
+                        
                    
-                   charts[i]['artist'].append(artiste[1].text)
-                   charts[i]['track'].append(artiste[2].text)
                     
             i += 1
 
