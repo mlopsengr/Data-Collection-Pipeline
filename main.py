@@ -3,6 +3,7 @@ import os
 import json
 from pickle import NONE
 from this import d
+from tkinter.ttk import Style
 #from types import NoneType
 from unicodedata import name
 import pandas as pd
@@ -14,6 +15,8 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.common.by import By
 import time
+from utils.scraper import CoverScraper
+
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')
@@ -27,6 +30,7 @@ class Scraper:
         self.url = url
         self.driver = webdriver.Chrome()
         self.driver.get(self.url)
+        self.driver.maximize_window()
 
         
 
@@ -109,40 +113,55 @@ class Scraper:
             chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
             charts[i]['category'].append(chart_name)
             i += 1
+            
+           
 
         i = 1
         for link in top50_chart_list['links']:
             self.driver.get(link)
             time.sleep(1)
-            self.driver.execute_script("window.scrollTo(0, 1080)")
-            time.sleep(0.5)
+            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+            self.driver.execute_script("window.scrollTo(0, 2 * document.body.scrollHeight);")
+            time.sleep(4)
+            self.driver.execute_script("window.scrollTo(0, 3 * document.body.scrollHeight);")
+            
+            #stream_case = self.driver.find_elements(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
+            #for case in stream_case:
+            #    stream = case.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
+            #    charts[i]['streams'].append(stream)
+
+       
+
+           
+
             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
             for artiste in artiste_list:
                    time.sleep(1)
-                   self.driver.execute_script("window.scrollTo(0, 1080)")
+                   #self.driver.execute_script("window.scrollTo(0, )")
+                   stream = artiste.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
+                   charts[i]['streams'].append(stream)
+
                    artiste_case = artiste.find_elements(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
                    for case in artiste_case:
                         artiste = case.find_elements(by=By.TAG_NAME, value ='a') 
                         
                         charts[i]['artist'].append(artiste[1].text)
-                        charts[i]['track'].append(artiste[2].text)
+                      
+                        charts[i]['track'].append(artiste[2].text)   
 
-                        
-                   
+                        #images = case.find_elements(By.XPATH, './/span[@class="sc-artwork sc-artwork-4x sc-artwork-placeholder-10  image__full g-opacity-transition"]')
+                        images = case.find_elements(By.XPATH, '//span[@class="sc-artwork sc-artwork-4x sc-artwork-placeholder-4  image__full g-opacity-transition"]')
+                        for image in images:
+                            image = image.get_attribute("background-image")
+                            charts[i]['image'].append(image)    
+
+
                     
-            i += 1
+            i += 1 
+           
 
-
-
-
-        i = 1
-        for link in top50_chart_list['links']:
-            self.driver.get(link)
-            time.sleep(2)
-            stream_case = self.driver.find_element(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-            stream_hold = stream_case.find_element(By.XPATH, '//div[@class="trackItem__additional"]')
-            stream = stream_case.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
-            charts[i]['streams'].append(stream)
+            
             
         # convert chart to table
         table =  pd.DataFrame(charts)
@@ -167,6 +186,7 @@ if __name__ == '__main__':
     bot.get_top_50_links()
     
     # %%
+   
     
    
 # %%
