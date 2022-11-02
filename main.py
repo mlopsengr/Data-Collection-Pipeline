@@ -15,6 +15,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.common.by import By
 import time
+import urllib3
 from utils.scraper import CoverScraper
 
 
