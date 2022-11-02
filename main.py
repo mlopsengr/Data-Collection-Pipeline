@@ -22,7 +22,7 @@ from utils.scraper import CoverScraper
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 
-
+http = urllib3.PoolManager()
 
 
 
