@@ -20,7 +20,8 @@ from utils.scraper import CoverScraper
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')
-#driver = webdriver.Chrome('/Users/tobijohn/miniforge3/envs/soundscrape-env/bin/chromedriver', chrome_options=chrome_options)
+
+
 
 
 
@@ -138,7 +139,7 @@ class Scraper:
             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
             for artiste in artiste_list:
                    time.sleep(1)
-                   #self.driver.execute_script("window.scrollTo(0, )")
+                   
                    stream = artiste.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
                    charts[i]['streams'].append(stream)
 
@@ -151,8 +152,10 @@ class Scraper:
                         charts[i]['track'].append(artiste[2].text)   
 
                         #images = case.find_elements(By.XPATH, './/span[@class="sc-artwork sc-artwork-4x sc-artwork-placeholder-10  image__full g-opacity-transition"]')
-                        images = case.find_elements(By.XPATH, '//span[@class="sc-artwork sc-artwork-4x sc-artwork-placeholder-4  image__full g-opacity-transition"]')
+                        images = case.find_elements(By.XPATH, '//div[@class="trackItem__image sc-py-1x sc-mr-2x"]')
                         for image in images:
+                            
+                            image =  image.find_element(By.TAG_NAME, value='span')
                             image = image.get_attribute("background-image")
                             charts[i]['image'].append(image)    
 
