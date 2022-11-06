@@ -153,7 +153,7 @@ class Scraper:
                         charts[i]['track'].append(artiste[2].text)   
 
                         
-                        images = case.find_elements(By.XPATH, '//div[@class="trackItem__image sc-py-1x sc-mr-2x"]')
+                        images = case.find_elements(By.XPATH, './/div[@class="trackItem__image sc-py-1x sc-mr-2x"]')
                         for image in images:
                             
                             image =  image.find_element(By.TAG_NAME, value = 'span').get_attribute('style')
