@@ -4,7 +4,6 @@ import json
 from pickle import NONE
 from this import d
 from tkinter.ttk import Style
-#from types import NoneType
 from unicodedata import name
 import pandas as pd
 from selenium import webdriver
@@ -15,22 +14,26 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options 
 from selenium.webdriver.common.by import By
 import time
-import urllib3
+import urllib.request
 from utils.scraper import CoverScraper
+from selenium.webdriver.chrome.service import Service
+import shutil
 
 
-chrome_options = Options()
-chrome_options.add_argument('--headless')
 
-http = urllib3.PoolManager()
+
+
 
 
 
 
 class Scraper:
     def __init__(self, url: str = 'https://soundcloud.com/discover'):
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        service = Service('/Users/tobijohn/miniforge3/envs/soundscrape-env/bin/chromedriver')
         self.url = url
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.driver.get(self.url)
         self.driver.maximize_window()
 
@@ -128,10 +131,7 @@ class Scraper:
             time.sleep(4)
             self.driver.execute_script("window.scrollTo(0, 3 * document.body.scrollHeight);")
             
-            #stream_case = self.driver.find_elements(By.XPATH, '//li[@class="systemPlaylistTrackList__item sc-border-light-bottom sc-px-2x"]')
-            #for case in stream_case:
-            #    stream = case.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
-            #    charts[i]['streams'].append(stream)
+        
 
        
 
@@ -152,15 +152,25 @@ class Scraper:
                       
                         charts[i]['track'].append(artiste[2].text)   
 
-                        #images = case.find_elements(By.XPATH, './/span[@class="sc-artwork sc-artwork-4x sc-artwork-placeholder-10  image__full g-opacity-transition"]')
+                        
                         images = case.find_elements(By.XPATH, '//div[@class="trackItem__image sc-py-1x sc-mr-2x"]')
                         for image in images:
                             
-                            image =  image.find_element(By.TAG_NAME, value='span')
-                            image = image.get_attribute("background-image")
-                            charts[i]['image'].append(image)    
-
-
+                            image =  image.find_element(By.TAG_NAME, value = 'span').get_attribute('style')
+                            charts[i]['image'].append(image)
+                            
+                            image = image.split('url("')[1].split('")')[0]
+                            # using the url to get the image with urllib
+                            urllib.request.urlretrieve(image, f"image{i}.jpg")
+                            # rename the image as the track name
+                            os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")
+                            shutil.move(f"{artiste[2].text}.jpg", f"images/{artiste[2].text}.jpg")
+                            #charts[i]['image'].append(f"image{i}.jpg")
+                            # add the image to the images folder
+                            
+                            
+                            
+                            
                     
             i += 1 
            
