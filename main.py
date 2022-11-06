@@ -160,13 +160,12 @@ class Scraper:
                             charts[i]['image'].append(image)
                             
                             image = image.split('url("')[1].split('")')[0]
-                            # using the url to get the image with urllib
-                            urllib.request.urlretrieve(image, f"image{i}.jpg")
-                            # rename the image as the track name
-                            os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")
+                            
+                            urllib.request.urlretrieve(image, f"image{i}.jpg")  # using the url to get the image with urllib
+                           
+                            os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")     # rename the image as the track name
                             shutil.move(f"{artiste[2].text}.jpg", f"images/{artiste[2].text}.jpg")
-                            #charts[i]['image'].append(f"image{i}.jpg")
-                            # add the image to the images folder
+                           
                             
                             
                             
