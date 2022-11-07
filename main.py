@@ -161,10 +161,22 @@ class Scraper:
                             
                             image = image.split('url("')[1].split('")')[0]
                             
-                            urllib.request.urlretrieve(image, f"image{i}.jpg")  # using the url to get the image with urllib
-                           
-                            os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")     # rename the image as the track name
-                            shutil.move(f"{artiste[2].text}.jpg", f"images/{artiste[2].text}.jpg")
+                            
+
+                            
+                           # making sure to skip image if not found
+                            try:    
+                                urllib.request.urlretrieve(image, f"image{i}.jpg")  # using the url to get the image with urllib
+                                os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")     # rename the image as the track name
+                                shutil.move(f"{artiste[2].text}.jpg", f"images/{artiste[2].text}.jpg")
+                            except:
+                                # if image not found, use a default image
+                                #urllib.request.urlretrieve('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', f"image{i}.jpg")
+                                pass
+
+
+
+                            
                            
                             
                             
@@ -179,7 +191,12 @@ class Scraper:
         # convert chart to table
         table =  pd.DataFrame(charts)
 
-        report = table.to_json
+        # save table to sql
+        table.to_sql('charts', con=self.engine, if_exists='replace', index=False)
+
+        # save inmages to same table on sql
+        
+
 
         
 
