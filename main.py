@@ -1,44 +1,58 @@
-from email.mime import image
-import os
 import json
+import os
+import shutil
+import time
+import urllib.request
+from email.mime import image
 from pickle import NONE
-from this import d
 from tkinter.ttk import Style
 from unicodedata import name
 import pandas as pd
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.chrome.options import Options 
-from selenium.webdriver.common.by import By
-import time
-import urllib.request
-from utils.scraper import CoverScraper
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-import shutil
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from this import d
 
-
-
-
-
-
-
+from utils.scraper import CoverScraper
 
 
 class Scraper:
-    def __init__(self, url: str = 'https://soundcloud.com/discover'):
+    def __init__(self, url: str = 'https://soundcloud.com/discover'):   
+        '''
+        Initializes the driver and opens the webpage
+        Parameters
+        ----------
+        url: str
+        The url of the webpage to be opened
+        '''
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         service = Service('/Users/tobijohn/miniforge3/envs/soundscrape-env/bin/chromedriver')
         self.url = url
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.driver.get(self.url)
-        self.driver.maximize_window()
+        self.driver.maximize_window()  
+       
+        self.charts = { 1: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                   2: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                   3: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                   4: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                     5: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        6: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        7: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        8: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        9: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+                        10: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
+        }
 
-        
-
+        charts = self.charts
+        return charts
+   
     def get_data(self):
         data = self.driver.execute_script("return window.__PRELOADED_STATE__")
         return data
@@ -54,9 +68,7 @@ class Scraper:
         element = self.driver.find_element(By.XPATH, xpath)
         element.click(xpath)
 
-
     def accept_cookies(self, xpath:str = '//button[@id="onetrust-accept-btn-handler"]'):
-
         '''
         Opens Soundcloud and Accepts cookies
         Returns
@@ -79,6 +91,18 @@ class Scraper:
             
         return driver
 
+    def empty_image_directory(self, path:str = 'images'):
+        '''
+        Empties the images directory
+        Parameters
+        ----------
+        path: str
+        The path to the images directory
+        '''
+        for file in os.listdir('images'): 
+                                    if file.endswith('.jpg'):
+                                        os.remove(os.path.join('images', file))
+
     def get_top_50_links(self):
         '''
         Returns
@@ -86,56 +110,46 @@ class Scraper:
         top_50: list
         A list of the top 50 playlist categories on soundcloud
         '''
+        chart_links =  {'links': [] }
         
         top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
-        top50_chart_list = {'links': [] }
-        charts = { 1: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                   2: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                   3: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                   4: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                     5: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                        6: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                        7: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                        8: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                        9: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-                        10: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
-        }
 
         for record in top50_list:
 
             a_tag = record.find_element(by=By.TAG_NAME, value = 'a')
             link = a_tag.get_attribute('href')
-            top50_chart_list['links'].append(link)
-            
-    
-        print(f"There are {top50_chart_list['links'].__len__()} chart lists")
+            chart_links['links'].append(link)
+        print(f"There are {chart_links['links'].__len__()} chart lists")
 
+        return chart_links 
+            
+    def get_chart_category(self, xpath:str = '//span[@class="fullHero__titleTextTitle"]'):
+        '''
+        Returns
+        -------
+        category: str
+        The category of the chart
+        '''
+
+        chart_links = self.get_top_50_links()
+        charts = self.charts
         i = 1
-        for link in top50_chart_list['links']:
-           
+        for link in chart_links['links']:
             self.driver.get(link)
             time.sleep(1)
-            chart_name = self.driver.find_element(By.XPATH, '//span[@class="fullHero__titleTextTitle"]').text
+            chart_name = self.driver.find_element(By.XPATH, xpath).text
             charts[i]['category'].append(chart_name)
             i += 1
             
-           
-
         i = 1
-        for link in top50_chart_list['links']:
-            self.driver.get(link)
+        for element in chart_links['links']:
+            self.driver.get(element)
             time.sleep(1)
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(5)
             self.driver.execute_script("window.scrollTo(0, 2 * document.body.scrollHeight);")
             time.sleep(4)
             self.driver.execute_script("window.scrollTo(0, 3 * document.body.scrollHeight);")
-            
-        
-
-       
-
-           
 
             artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
             for artiste in artiste_list:
@@ -159,61 +173,58 @@ class Scraper:
                             image =  image.find_element(By.TAG_NAME, value = 'span').get_attribute('style')
                             charts[i]['image'].append(image)
                             
-                            image = image.split('url("')[1].split('")')[0]
+                            
                             
                             
 
                             
                            # making sure to skip image if not found
                             try:    
+                                image = image.split('url("')[1].split('")')[0]
                                 urllib.request.urlretrieve(image, f"image{i}.jpg")  # using the url to get the image with urllib
-                                os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")     # rename the image as the track name
+                                os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")     # rename the image as the tr empty the image folderack name
+                                
+                                
+
                                 shutil.move(f"{artiste[2].text}.jpg", f"images/{artiste[2].text}.jpg")
                             except:
                                 # if image not found, use a default image
                                 #urllib.request.urlretrieve('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', f"image{i}.jpg")
                                 pass
-
-
-
-                            
-                           
-                            
-                            
-                            
-                            
+             
                     
             i += 1 
            
-
-            
-            
         # convert chart to table
         table =  pd.DataFrame(charts)
 
-        # save table to sql
+        # table to sql
         table.to_sql('charts', con=self.engine, if_exists='replace', index=False)
 
-        # save inmages to same table on sql
-        
+
+
+
+    
 
 
         
 
         print(table)
         print (charts)
-        return top50_chart_list, table
+        return chart_links, table
 
 
 
 
 if __name__ == '__main__':
     bot = Scraper()
+    charts={}
     data = bot.get_data()
-    
-    #print(data)
     bot.accept_cookies()
+    bot.empty_image_directory()
     bot.get_top_50_links()
+    bot.get_chart_category()
+
     
     # %%
    
