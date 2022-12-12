@@ -8,6 +8,7 @@ from pickle import NONE
 from tkinter.ttk import Style
 from unicodedata import name
 import pandas as pd
+import psycopg2
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
@@ -17,6 +18,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from this import d
+import sqlalchemy
 
 from utils.scraper import CoverScraper
 
@@ -50,8 +52,7 @@ class Scraper:
                         10: {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]},
         }
 
-        charts = self.charts
-        return charts
+        
    
     def get_data(self):
         data = self.driver.execute_script("return window.__PRELOADED_STATE__")
@@ -115,7 +116,6 @@ class Scraper:
         top50_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTile playableTile sc-mb-6x"]')
 
         for record in top50_list:
-
             a_tag = record.find_element(by=By.TAG_NAME, value = 'a')
             link = a_tag.get_attribute('href')
             chart_links['links'].append(link)
@@ -130,19 +130,30 @@ class Scraper:
         category: str
         The category of the chart
         '''
-
         chart_links = self.get_top_50_links()
-        charts = self.charts
+        categories =  {'links': [],'category': [] }
         i = 1
         for link in chart_links['links']:
             self.driver.get(link)
             time.sleep(1)
             chart_name = self.driver.find_element(By.XPATH, xpath).text
-            charts[i]['category'].append(chart_name)
+            categories['category'].append(chart_name)
+            categories['links'].append(link)
             i += 1
             
+        return categories
+
+    def get_track_info(self, xpath:str = '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li'):
+        ''' 
+        Returns
+        -------
+        tracks: list
+        A list of the tracks in the chart
+        '''
+        categories = self.get_chart_category()
+        tracks = {'category':[], 'artist': [], 'track':[],'streams':[], 'image':[]}
         i = 1
-        for element in chart_links['links']:
+        for element in categories['links']:
             self.driver.get(element)
             time.sleep(1)
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -150,80 +161,77 @@ class Scraper:
             self.driver.execute_script("window.scrollTo(0, 2 * document.body.scrollHeight);")
             time.sleep(4)
             self.driver.execute_script("window.scrollTo(0, 3 * document.body.scrollHeight);")
+            artiste_list = self.driver.find_elements(By.XPATH, xpath)
 
-            artiste_list = self.driver.find_elements(By.XPATH, '//div[@class="systemPlaylistTrackList lazyLoadingList"]//li')
+            tracks['category'].append(categories['category'][i-1])
+
+
             for artiste in artiste_list:
                    time.sleep(1)
-                   
                    stream = artiste.find_element(By.XPATH, '//span[@class="trackItem__playCount sc-ministats sc-ministats-medium  sc-ministats-plays"]').text
-                   charts[i]['streams'].append(stream)
+                   tracks['streams'].append(stream)
 
                    artiste_case = artiste.find_elements(By.XPATH, './/div[@class="trackItem g-flex-row sc-type-small sc-text-body sc-type-light sc-text-secondary m-interactive m-playable"]')
                    for case in artiste_case:
                         artiste = case.find_elements(by=By.TAG_NAME, value ='a') 
-                        
-                        charts[i]['artist'].append(artiste[1].text)
-                      
-                        charts[i]['track'].append(artiste[2].text)   
+                        tracks['artist'].append(artiste[1].text)
+                        tracks['track'].append(artiste[2].text)   
 
                         
                         images = case.find_elements(By.XPATH, './/div[@class="trackItem__image sc-py-1x sc-mr-2x"]')
                         for image in images:
-                            
                             image =  image.find_element(By.TAG_NAME, value = 'span').get_attribute('style')
-                            charts[i]['image'].append(image)
+                            tracks['image'].append(image)
                             
-                            
-                            
-                            
-
-                            
-                           # making sure to skip image if not found
                             try:    
                                 image = image.split('url("')[1].split('")')[0]
                                 urllib.request.urlretrieve(image, f"image{i}.jpg")  # using the url to get the image with urllib
                                 os.rename(f"image{i}.jpg", f"{artiste[2].text}.jpg")     # rename the image as the tr empty the image folderack name
-                                
-                                
-
                                 shutil.move(f"{artiste[2].text}.jpg", f"images/{artiste[2].text}.jpg")
+                                
                             except:
                                 # if image not found, use a default image
                                 #urllib.request.urlretrieve('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', f"image{i}.jpg")
                                 pass
              
                     
-            i += 1 
+        i += 1 
            
         # convert chart to table
-        table =  pd.DataFrame(charts)
+        table =  pd.DataFrame(tracks)
 
         # table to sql
         table.to_sql('charts', con=self.engine, if_exists='replace', index=False)
 
 
+        # creating a new dataframe with two colums
+        df = pd.DataFrame(columns=['category', 'track', 'artist', 'streams', 'image'])
+        # adding the data to the dataframe
+        df['category'] = tracks['category']
+
+      
+     
 
 
-    
+
 
 
         
 
         print(table)
-        print (charts)
-        return chart_links, table
+        
+        return table
 
 
 
 
 if __name__ == '__main__':
     bot = Scraper()
-    charts={}
+   
     data = bot.get_data()
     bot.accept_cookies()
     bot.empty_image_directory()
-    bot.get_top_50_links()
-    bot.get_chart_category()
+    bot.get_track_info()
 
     
     # %%
