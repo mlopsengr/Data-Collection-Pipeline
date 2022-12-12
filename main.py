@@ -8,6 +8,7 @@ from pickle import NONE
 from tkinter.ttk import Style
 from unicodedata import name
 import pandas as pd
+from sqlalchemy import create_engine
 import psycopg2
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -209,18 +210,32 @@ class Scraper:
         # adding the data to the dataframe
         df['category'] = tracks['category']
 
-      
-     
-
-
-
-
-
-        
 
         print(table)
         
         return table
+
+      
+    def upload_data(self, table:pd.DataFrame):
+        '''
+        Uploads the table to postgressql database
+        Parameters
+        ----------
+        table: pd.DataFrame
+        The table to upload
+        '''
+        table = self.get_track_info()
+        # add data to postgressql database called 'tobijohn'
+        engine = create_engine('postgresql://postgres:password@localhost:5432/tobijohn')
+        # add data to postgressql database called 'tobijohn'
+        table.to_sql('Soundata1', engine)
+
+        return table
+
+
+
+        
+
 
 
 
@@ -232,6 +247,7 @@ if __name__ == '__main__':
     bot.accept_cookies()
     bot.empty_image_directory()
     bot.get_track_info()
+    
 
     
     # %%
